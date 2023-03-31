@@ -9,38 +9,77 @@ pub enum Direction {
     West,
 }
 
-pub struct Robot;
+pub struct Robot {
+    x: i32,
+    y: i32,
+    d: Direction,
+}
+
 
 impl Robot {
     pub fn new(x: i32, y: i32, d: Direction) -> Self {
-        unimplemented!("Create a robot at (x, y) ({x}, {y}) facing {d:?}")
+        Robot {x, y, d}
     }
 
     #[must_use]
     pub fn turn_right(self) -> Self {
-        unimplemented!()
+        let d = match self.d {
+            Direction::North => Direction::East,
+            Direction::East => Direction::South,
+            Direction::South => Direction::West,
+            Direction::West => Direction::North,
+        };
+        Robot {x: self.x, y: self.y, d}
     }
 
     #[must_use]
     pub fn turn_left(self) -> Self {
-        unimplemented!()
+        let d = match self.d {
+            Direction::North => Direction::West,
+            Direction::East => Direction::North,
+            Direction::South => Direction::East,
+            Direction::West => Direction::South,
+        };
+        Robot {x: self.x, y: self.y, d}
     }
 
     #[must_use]
     pub fn advance(self) -> Self {
-        unimplemented!()
+        let (x, y, d) = match self.d {
+            Direction::North => (self.x, self.y + 1, Direction::North),
+            Direction::East => (self.x + 1, self.y, Direction::East),
+            Direction::South => (self.x, self.y - 1, Direction::South),
+            Direction::West => (self.x - 1, self.y, Direction::West),
+        };
+        Robot {x, y, d}
     }
 
     #[must_use]
     pub fn instructions(self, instructions: &str) -> Self {
-        unimplemented!("Follow the given sequence of instructions: {instructions}")
+
+        let robot = Robot {
+            x: self.x,
+            y: self.y,
+            d: self.d,
+        };
+
+        let x = instructions.chars();
+
+        for c in instructions.chars() {
+            let new_robot = match c {
+                'L' => robot.turn_left(),
+                'R' => robot.turn_left(),
+                'A' => robot.advance(),
+                _ => robot,
+            };
+        }
     }
 
     pub fn position(&self) -> (i32, i32) {
-        unimplemented!()
+        (self.x, self.y)
     }
 
     pub fn direction(&self) -> &Direction {
-        unimplemented!()
+        &self.d
     }
 }
