@@ -1,7 +1,7 @@
 // The code below is a stub. Just enough to satisfy the compiler.
 // In order to pass the tests you can add-to or change any of this code.
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum Direction {
     North,
     East,
@@ -9,6 +9,7 @@ pub enum Direction {
     West,
 }
 
+#[derive(Copy, Clone)]
 pub struct Robot {
     x: i32,
     y: i32,
@@ -56,22 +57,26 @@ impl Robot {
 
     #[must_use]
     pub fn instructions(self, instructions: &str) -> Self {
-
-        let robot = Robot {
+        let mut robot = Robot {
             x: self.x,
             y: self.y,
             d: self.d,
         };
 
-        let x = instructions.chars();
-
         for c in instructions.chars() {
-            let new_robot = match c {
-                'L' => robot.turn_left(),
-                'R' => robot.turn_left(),
-                'A' => robot.advance(),
-                _ => robot,
-            };
+            let new_robot = robot.apply_instruction(c);
+            robot = new_robot;
+        };
+
+        robot
+    }
+    
+    fn apply_instruction(self, instruction: char) -> Self {
+        match instruction {
+            'L' => self.turn_left(),
+            'R' => self.turn_right(),
+            'A' => self.advance(),
+             _ => self,
         }
     }
 
@@ -81,5 +86,20 @@ impl Robot {
 
     pub fn direction(&self) -> &Direction {
         &self.d
+    }
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_apply_instruction() {
+        let robot = Robot::new(-1, -1, Direction::South).apply_instruction('L');
+        assert_eq!(robot.position(), (-1, -1));
+        assert_eq!(robot.direction(), &Direction::East);
     }
 }
